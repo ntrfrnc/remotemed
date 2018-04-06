@@ -1,0 +1,31 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: auto;
+  padding: 0;
+  max-width: 960px;
+  font-family: sans-serif;
+}
+
+.page {
+  min-height: 100vh;
+  display: grid;
+  grid-template:
+    "head" minmax(auto, max-content)
+    "main" 1fr
+    "foot" minmax(auto, max-content) / 1fr
+}
+
+header {
+  grid-area: head;
+}
+
+main {
+  grid-area: main;
+}
+
+footer {
+  grid-area: foot;
+}

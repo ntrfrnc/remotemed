@@ -1,0 +1,12 @@
+{
+  "server": {
+    "port" : 8080
+  },
+  "db": {
+    "user": "USERNAME",
+    "password": "USER_PASSWORD",
+    "name": "DATABASE_NAME",
+    "host": "localhost",
+    "port": 27017
+  }
+}

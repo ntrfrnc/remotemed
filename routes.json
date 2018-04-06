@@ -1,0 +1,18 @@
+[
+  {
+    "path": "/",
+    "controller": "frontPage"
+  },
+  {
+    "path": "/login",
+    "controller": "login"
+  },
+  {
+    "path": "/patient-panel",
+    "controller": "patientPanel"
+  },
+  {
+    "path": "/doctor-panel",
+    "controller": "doctorPanel"
+  }
+]
