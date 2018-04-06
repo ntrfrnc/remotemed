@@ -1,9 +1,10 @@
 const pageTpl = require('../templates/page');
 const doctorPanelTpl = require('../templates/doctorPanel');
+const t = require('../utils/translate');
 
 function handle (request, response) {
   response.end(pageTpl({
-    title: 'Panel lekarza',
+    title: t('doctorPanel'),
     content: doctorPanelTpl({
 
     })

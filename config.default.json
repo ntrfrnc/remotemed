@@ -8,5 +8,6 @@
     "name": "DATABASE_NAME",
     "host": "localhost",
     "port": 27017
-  }
+  },
+  "lang": "en-us"
 }
