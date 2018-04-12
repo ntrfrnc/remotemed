@@ -29,3 +29,19 @@ main {
 footer {
   grid-area: foot;
 }
+
+.user-navigation{
+  width:100%;
+}
+.user-navigation > ul{
+  width:100%;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-end;
+  list-style: none;
+  margin:0;
+  padding:0;
+}
+.user-navigation > ul > li{
+  margin-left: 20px;
+}

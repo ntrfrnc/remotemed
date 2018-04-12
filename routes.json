@@ -8,6 +8,10 @@
     "controller": "login"
   },
   {
+    "path": "/logout",
+    "controller": "logout"
+  },
+  {
     "path": "/patient-panel",
     "controller": "patientPanel"
   },

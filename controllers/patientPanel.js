@@ -16,8 +16,11 @@ async function handle (request, response) {
     title: t('patientPanel'),
     content: patientPanelTpl({
 
-    })
+    }),
+    user: user
   }));
+
+  return true;
 }
 
 module.exports = {

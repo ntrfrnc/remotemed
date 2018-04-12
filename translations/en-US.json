@@ -5,5 +5,7 @@
   "submitLogin": "Log in",
   "patientPanel": "Patient Panel",
   "doctorPanel": "Doctor Panel",
-  "incorrectLoginPass": "Incorrect login or password"
+  "incorrectLoginPass": "Incorrect login or password",
+  "welcome": "Welcome",
+  "logout": "Logout"
 }
