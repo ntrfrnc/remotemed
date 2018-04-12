@@ -14,6 +14,7 @@ async function handle(request, response) {
 
   response.write(pageTpl({
     title: t('doctorPanel'),
+    pageClass: 'page--doctor-panel',
     content: doctorPanelTpl({
       content: 'test content'
     }),

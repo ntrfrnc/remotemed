@@ -42,6 +42,7 @@ async function handlePost(request, response, path) {
 function showLoginPage(response, path, error) {
   response.write(pageTpl({
     title: t('loginPage'),
+    pageClass: 'page--login',
     content: loginTpl({
       formActionPath: path
     }),

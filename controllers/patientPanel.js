@@ -14,6 +14,7 @@ async function handle (request, response) {
 
   response.write(pageTpl({
     title: t('patientPanel'),
+    pageClass: 'page--patient-panel',
     content: patientPanelTpl({
 
     }),

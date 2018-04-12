@@ -1,11 +1,11 @@
 {
   "loginPage": "Log in",
-  "login": "Login",
+  "username": "Username",
   "password": "Password",
   "submitLogin": "Log in",
   "patientPanel": "Patient Panel",
   "doctorPanel": "Doctor Panel",
-  "incorrectLoginPass": "Incorrect login or password",
+  "incorrectLoginPass": "Incorrect username or password",
   "welcome": "Welcome",
   "logout": "Logout"
 }

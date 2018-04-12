@@ -5,7 +5,7 @@ const t = require('../utils/translate');
 module.exports = v => {
 
   const m = tpl.process`
-  <section class="page">
+  <section class="page ${v.pageClass}">
     <header>
       ${v.user ? `<nav class="user-navigation"><ul>
         <li>${t('welcome')} <strong>${v.user.username}</strong></li>
@@ -14,11 +14,11 @@ module.exports = v => {
       <h1 class="page__title">${v.title}</h1>
     </header>
     <main>
-      ${v.message ? `<div class="message--${v.message.type}">${v.message.content}</div>` : ''}
+      ${v.message ? `<div class="message message--${v.message.type}">${v.message.content}</div>` : ''}
       ${v.content}
     </main>
     <footer>
-      Copyright © RemoteMed 2018
+      RemoteMed prototype app
     </footer>
   </section>
   `;
