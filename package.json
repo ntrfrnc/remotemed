@@ -4,11 +4,17 @@
   "description": "Prototype app for testing posibility of streaming medical data over websocket connection from patient to medical doctor in realtime and storing it at the same time in the database",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "adduser": "node ./cli/addUser.js"
   },
   "author": "Rafael Pawlos",
   "license": "MIT",
-  "devDependencies": {
-  },
-  "dependencies": {}
+  "devDependencies": {},
+  "dependencies": {
+    "bcrypt": "^2.0.0",
+    "body-parser": "^1.18.2",
+    "client-sessions": "^0.8.0",
+    "connect": "^3.6.6",
+    "mongodb": "^3.0.5",
+    "prompt": "^1.0.0"
+  }
 }

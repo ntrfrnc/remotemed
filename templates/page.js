@@ -9,6 +9,7 @@ module.exports = v => {
       <h1 class="page__title">${v.title}</h1>
     </header>
     <main>
+      ${v.message ? `<div class="message--${v.message.type}">${v.message.content}</div>` : ''}
       ${v.content}
     </main>
     <footer>

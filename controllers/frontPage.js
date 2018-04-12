@@ -1,7 +1,7 @@
 const frontPageTpl = require('../templates/frontPage');
 
 function handle (request, response) {
-  response.end(frontPageTpl({
+  response.write(frontPageTpl({
     title: 'Home page'
   }));
 }

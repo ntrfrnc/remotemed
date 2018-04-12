@@ -1,7 +1,7 @@
 [
   {
     "path": "/",
-    "controller": "frontPage"
+    "controller": "login"
   },
   {
     "path": "/login",

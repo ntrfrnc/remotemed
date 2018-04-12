@@ -4,19 +4,26 @@ const uri = `mongodb://${config.user}:${config.password}@${config.host}:${config
 
 let _db;
 
-function connect() {
-  return MongoClient.connect(uri);
+async function connect() {
+  const client = await MongoClient.connect(uri);
+  return client.db(config.name);
 }
 
 function disconnect() {
   return _db.close();
 }
 
-function connection() {
-  return _db ? _db : connect();
+async function connection() {
+  return _db ? _db : await connect();
+}
+
+async function getCollection(collectionName) {
+  const db = await connection();
+  return db.collection(collectionName);
 }
 
 module.exports = {
   connection,
-  disconnect
+  disconnect,
+  getCollection
 };

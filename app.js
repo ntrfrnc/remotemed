@@ -1,68 +1,32 @@
-const routes = require('./routes');
-const url = require('url');
-const path = require('path');
-const fs = require('fs');
-const util = require('util');
+const http = require('http');
+const connect = require('connect');
+const session = require('client-sessions');
+var bodyParser = require('body-parser');
+const config = require('./config');
+const routing = require('./utils/routingHandler');
 
-async function handleRequest(request, response) {
-  const pathName = url.parse(request.url).pathname;
-  let resolved = false;
+global.appRoot = __dirname;
 
-  if (pathName.substr(0, 7) === '/public') {
-    resolved = await handleStatic(pathName, response);
-  } else {
-    for (let route of routes) {
-      if (pathName === route.path) {
-        try {
-          const controller = require('./controllers/' + route.controller);
-          response.writeHead(200, {'Content-Type': 'text/html'});
-          resolved = true;
+const app = connect();
+const server = http.createServer(app);
 
-          controller.handle(request, response);
-        } catch (e) {
-          console.log(`Controller "${route.controller}" not found, error message:\n`, e);
-        }
+app.use(session({
+  cookieName: 'session',
+  secret: '71y2n_0x!$npU3d$@#[{,u-H>xb}m',
+  duration: 2 * 60 * 60 * 1000, // 2h
+  activeDuration: 15 * 60 * 1000 // 15min
+}));
 
-        break;
-      }
-    }
-  }
+// app.use(session({
+//   name: 'session',
+//   keys: ['71y2n_0x!$npU3d$@#[{,u-H>xb}m', 'bsr14B.hs)^2s[G4BHad37<d)#'],
+//   maxAge: 2 * 60 * 60 * 1000, // 2h
+// }));
 
-  if (!resolved) {
-    response.writeHead(404);
-    response.end('Page not found');
-  }
-}
+app.use(bodyParser.urlencoded({extended: true}));
 
-async function handleStatic(pathName, response) {
-  const ctMap = {
-    '.ico': 'image/x-icon',
-    '.html': 'text/html',
-    '.js': 'text/javascript',
-    '.json': 'application/json',
-    '.css': 'text/css',
-    '.png': 'image/png',
-    '.jpg': 'image/jpeg',
-    '.wav': 'audio/wav',
-    '.mp3': 'audio/mpeg',
-    '.svg': 'image/svg+xml',
-    '.pdf': 'application/pdf',
-    '.doc': 'application/msword'
-  };
+app.use(routing);
 
-  try {
-    const data = await util.promisify(fs.readFile)(__dirname + pathName);
-    response.writeHead(200, {'Content-Type': ctMap[path.extname(pathName)] || 'text/plain'});
-    response.end(data);
-
-    return true;
-
-  } catch (e) {
-    console.log(e);
-    return false;
-  }
-}
-
-module.exports = {
-  handleRequest
-};
+server.listen(config.server.port, () => {
+  console.log('App running at port:', config.server.port);
+});
