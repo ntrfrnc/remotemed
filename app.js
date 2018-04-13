@@ -17,12 +17,6 @@ app.use(session({
   activeDuration: 15 * 60 * 1000 // 15min
 }));
 
-// app.use(session({
-//   name: 'session',
-//   keys: ['71y2n_0x!$npU3d$@#[{,u-H>xb}m', 'bsr14B.hs)^2s[G4BHad37<d)#'],
-//   maxAge: 2 * 60 * 60 * 1000, // 2h
-// }));
-
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.use(routing);
