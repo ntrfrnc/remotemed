@@ -30,7 +30,7 @@ a[href]:hover {
   margin: 0 var(--gutter);
   min-height: 100vh;
   display: grid;
-  grid-template: "head" minmax(auto, max-content) "main" 1fr "foot" minmax(auto, max-content) / 1fr
+  grid-template: "head" minmax(auto, max-content) "main" 1fr "foot" minmax(auto, max-content) / 100%
 }
 
 header {

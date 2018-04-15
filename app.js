@@ -1,7 +1,7 @@
 const http = require('http');
 const connect = require('connect');
 const session = require('client-sessions');
-var bodyParser = require('body-parser');
+const bodyParser = require('body-parser');
 const config = require('./config');
 const routing = require('./utils/routingHandler');
 
