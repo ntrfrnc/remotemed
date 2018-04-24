@@ -10,5 +10,6 @@
   "logout": "Logout",
   "myDoctor": "My Doctor",
   "startStopStreaming": "Start/Stop",
-  "none": "None"
+  "none": "None",
+  "choosePatient": "Choose patient"
 }

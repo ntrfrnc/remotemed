@@ -224,9 +224,11 @@ input[type="checkbox"].button:checked + label{
   border-top-color: var(--base-color);
 }
 
-.select-doctor {
+.select-doctor,
+.select-patient{
   display: block;
 }
-.select-doctor > select {
+.select-doctor > select,
+.select-patient > select{
   min-width: 150px;
 }
