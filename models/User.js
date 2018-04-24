@@ -36,14 +36,22 @@ async function authenticate(username, password) {
   return correct ? user : false;
 }
 
-async function loggedIn(request) {
-  if (!request.session || !request.session.userID) {
-    return false;
-  }
+const loggedIn = (function () {
+  const loggedIn = Symbol('loggedIn');
 
-  const users = await db.getCollection('Users');
-  return await users.findOne({'_id': new ObjectID(request.session.userID)});
-}
+  return async function (request) {
+    if (request[loggedIn] !== void(0)) {
+      return request[loggedIn];
+    }
+    if (!request.session || !request.session.userID) {
+      return false;
+    }
+
+    const users = await db.getCollection('Users');
+    request[loggedIn] = await users.findOne({'_id': new ObjectID(request.session.userID)});
+    return request[loggedIn];
+  }
+})();
 
 async function logIn(username, password, request) {
   const user = await authenticate(username, password);

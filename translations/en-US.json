@@ -7,5 +7,8 @@
   "doctorPanel": "Doctor Panel",
   "incorrectLoginPass": "Incorrect username or password",
   "welcome": "Welcome",
-  "logout": "Logout"
+  "logout": "Logout",
+  "myDoctor": "My Doctor",
+  "startStopStreaming": "Start/Stop",
+  "none": "None"
 }

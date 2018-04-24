@@ -1,6 +1,9 @@
 :root {
-  --gutter: 20px;
+  --gutter: 1.25rem;
   --base-color: #333;
+  --base-focus-color: #777;
+  --base-active-color: #000;
+  --base-transition-timing: .3s;
   font-family: Roboto, sans-serif;
   font-size: 16px;
   color: var(--base-color)
@@ -24,6 +27,14 @@ a[href] {
 
 a[href]:hover {
   color: #1b76b8;
+}
+
+input, select, textarea {
+  font-size: 1rem;
+}
+
+::placeholder {
+  color: var(--base-focus-color);
 }
 
 .page {
@@ -73,7 +84,7 @@ footer {
 }
 
 .message {
-  padding: 10px;
+  padding: 1rem;
   color: #fff;
   border-radius: 2px;
   margin: calc(var(--gutter) / 2) auto;
@@ -110,27 +121,112 @@ footer {
 
 input[type="text"],
 input[type="password"] {
-  border: 4px solid var(--base-color);
-  padding: 10px;
-  transition: border-color .3s ease;
+  border: 5px solid var(--base-color);
+  padding: 1rem;
+  transition: border-color var(--base-transition-timing);
 }
 
 input[type="text"]:focus,
 input[type="password"]:focus {
-  border-color: #777;
+  border-color: var(--base-focus-color);
   outline: none;
 }
 
 input[type="submit"] {
-  padding: 10px;
+  padding: 1rem;
   border: none;
   background-color: var(--base-color);
   color: #fff;
-  transition: background-color .3s ease;
+  transition: background-color var(--base-transition-timing);
   font-weight: 700;
 }
 
 input[type="submit"]:hover {
-  background: #777;
+  background: var(--base-focus-color);
   cursor: pointer;
+}
+
+.panel {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-around;
+}
+.panel__item{
+  padding: 20px;
+}
+
+input[type="checkbox"].button {
+  display: none;
+}
+
+input[type="checkbox"].button + label {
+  display: inline-block;
+  padding: 1rem 2rem;
+  color: #fff;
+  background: var(--base-color);
+  transition: background-color var(--base-transition-timing);
+}
+input[type="checkbox"].button + label:hover{
+  background-color: var(--base-focus-color);
+}
+input[type="checkbox"].button:checked + label{
+  background-color: var(--base-active-color);
+  background-image:
+    linear-gradient(90deg, rgba(255,255,255,0.3), rgba(255,255,255,0.4)),
+    linear-gradient(90deg, rgba(255,255,255,0.3), rgba(255,255,255,0.4));
+  background-repeat: no-repeat;
+  background-size: 10px 10px, 10px 10px;
+  animation: twostreams 2s infinite ease;
+}
+
+@keyframes twostreams {
+  0% { background-position: -10px 50%, -10px 50% }
+  15% { background-position: 0 50%, 0 50% }
+  35% { background-position: 0 0, 0 100% }
+  65% { background-position: 100% 0, 100% 100% }
+  85% { background-position: 100% 50%, 100% 50% }
+  100% { background-position: calc(100% + 10px) 50%,  calc(100% + 10px) 50% }
+}
+
+.simple-select{
+  position: relative;
+  display: inline-block;
+}
+
+.simple-select > select {
+  color: var(--base-color);
+  display: inline-block;
+  position: relative;
+  box-shadow: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  padding: 0.5rem 2.25rem 0.5rem 1rem;
+  border: 2px solid;
+  border-radius: 2px;
+  background: transparent;
+}
+
+.simple-select > select:disabled {
+  background-color: rgba(1,1,1,0.1);
+}
+
+.simple-select::before {
+  content: "";
+  display: inline-block;
+  position: absolute;
+  top: 50%;
+  margin-top: -0.25rem;
+  right: 0.75rem;
+  width: 0;
+  height: 0;
+  border: 0.5rem solid transparent;
+  border-top-color: var(--base-color);
+}
+
+.select-doctor {
+  display: block;
+}
+.select-doctor > select {
+  min-width: 150px;
 }
