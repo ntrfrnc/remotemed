@@ -7,7 +7,7 @@ module.exports = v => {
     <div class="panel__item">
       <label for="patientSelect">${t('choosePatient')}</label>
       <div class="simple-select select-patient">
-        <select id="doctorSelect">
+        <select id="patientSelect">
               <option value="none">${t('none')}</option>
           ${v.patients && v.patients.map(p => `
               <option value="${p._id.toString()}">${p.username}</option>

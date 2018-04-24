@@ -5,7 +5,7 @@ module.exports = v => {
   return tpl.process`
   <div class="panel patient-panel">
     <div class="panel__item">
-      <label for="selectDoctor">${t('myDoctor')}</label>
+      <label for="doctorSelect">${t('myDoctor')}</label>
       <div class="simple-select select-doctor">
         <select id="doctorSelect">
               <option value="none">${t('none')}</option>
