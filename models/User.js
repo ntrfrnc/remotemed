@@ -22,18 +22,18 @@ async function add(username, password, role) {
 
 async function remove(username) {
   const users = await db.getCollection('Users');
-  const user = await users.findOne({'username': username}, {projection: {_id: 1, role: 1}});
+  const user = await users.findOne({'username': username});
   if (!user) {
     throw new Error('User not exists: ' + username);
   }
 
   switch (user.role) {
     case 1: // patient
-      RelationsHandler.assignPatientToDoctor(user, 'none');
+      await RelationsHandler.assignPatientToDoctor(user, 'none');
       break;
     case 2: // doctor
       if (user.patientsID && user.patientsID.length > 0) {
-        await (await db.getCollection('Users')).update({_id: {$in:user.patientsID}}, {
+        await (await db.getCollection('Users')).update({_id: {$in: user.patientsID}}, {
           $unset: {
             doctorID: ''
           }
