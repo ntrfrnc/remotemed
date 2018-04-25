@@ -1,6 +1,7 @@
 const db = require('../utils/mongodb');
 const ObjectID = require('mongodb').ObjectID;
 const bcrypt = require('bcrypt');
+const RelationsHandler = require('../models/RelationsHandler');
 
 async function add(username, password, role) {
   const users = await db.getCollection('Users');
@@ -14,6 +15,35 @@ async function add(username, password, role) {
     'username': username,
     'password': passHash,
     'role': Number(role)
+  });
+
+  return true;
+}
+
+async function remove(username) {
+  const users = await db.getCollection('Users');
+  const user = await users.findOne({'username': username}, {projection: {_id: 1, role: 1}});
+  if (!user) {
+    throw new Error('User not exists: ' + username);
+  }
+
+  switch (user.role) {
+    case 1: // patient
+      RelationsHandler.assignPatientToDoctor(user, 'none');
+      break;
+    case 2: // doctor
+      if (user.patientsID && user.patientsID.length > 0) {
+        await (await db.getCollection('Users')).update({_id: {$in:user.patientsID}}, {
+          $unset: {
+            doctorID: ''
+          }
+        });
+      }
+      break;
+  }
+
+  await users.removeOne({
+    '_id': user._id
   });
 
   return true;
@@ -70,6 +100,7 @@ function logOut(request) {
 
 module.exports = {
   add,
+  remove,
   loggedIn,
   logIn,
   logOut

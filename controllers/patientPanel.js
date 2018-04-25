@@ -3,7 +3,7 @@ const patientPanelTpl = require('../templates/patientPanel');
 const t = require('../utils/translate');
 const User = require('../models/User');
 const db = require('../utils/mongodb');
-const ObjectID = require('mongodb').ObjectID;
+const RelationsHandler = require('../models/RelationsHandler');
 
 async function handle(request, response) {
   const user = await User.loggedIn(request);
@@ -62,7 +62,7 @@ async function handlePost(request, response) {
   switch (request.body.command) {
     case 'setDoctorForPatient':
       try {
-        await setDoctorForPatient(user, request.body.doctorID);
+        await RelationsHandler.assignPatientToDoctor(user, request.body.doctorID);
         response.write('success');
         return true;
       } catch (e) {
@@ -75,49 +75,6 @@ async function handlePost(request, response) {
       response.write('Command not recognized.');
       return true;
   }
-}
-
-async function setDoctorForPatient(patient, doctorID) {
-  if (patient.doctorID && patient.doctorID.toString() === doctorID) {
-    return;
-  }
-
-  if (!doctorID || doctorID === 'none') {
-    if (!patient.doctorID) {
-      return;
-    }
-
-    // Remove doctor from user
-    await (await db.getCollection('Users')).updateOne({_id: patient._id}, {
-      $unset: {
-        doctorID: ''
-      }
-    });
-
-  } else {
-    const doctorObjID = new ObjectID(doctorID);
-
-    // Set doctor for user
-    await (await db.getCollection('Users')).updateOne({_id: patient._id}, {
-      $set: {
-        doctorID: doctorObjID
-      }
-    });
-
-    // Add patient to new doctor
-    await (await db.getCollection('Users')).updateOne({_id: doctorObjID}, {
-      $addToSet: {
-        patientsID: patient._id
-      }
-    });
-  }
-
-  // Remove patient from previous doctor
-  await (await db.getCollection('Users')).updateOne({_id: patient.doctorID}, {
-    $pull: {
-      patientsID: patient._id
-    }
-  });
 }
 
 module.exports = {
