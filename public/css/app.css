@@ -123,6 +123,7 @@ input[type="text"],
 input[type="password"] {
   border: 5px solid var(--base-color);
   padding: 1rem;
+  border-radius: 2px;
   transition: border-color var(--base-transition-timing);
 }
 
@@ -139,6 +140,7 @@ input[type="submit"] {
   color: #fff;
   transition: background-color var(--base-transition-timing);
   font-weight: 700;
+  border-radius: 2px;
 }
 
 input[type="submit"]:hover {
@@ -155,6 +157,10 @@ input[type="submit"]:hover {
   padding: 20px;
 }
 
+.stream-data__label {
+  display: block;
+}
+
 input[type="checkbox"].button {
   display: none;
 }
@@ -165,6 +171,7 @@ input[type="checkbox"].button + label {
   color: #fff;
   background: var(--base-color);
   transition: background-color var(--base-transition-timing);
+  border-radius: 2px;
 }
 input[type="checkbox"].button + label:hover{
   background-color: var(--base-focus-color);
@@ -201,7 +208,7 @@ input[type="checkbox"].button:checked + label{
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  padding: 0.5rem 2.25rem 0.5rem 1rem;
+  padding: 1rem 2.25rem 1rem 1rem;
   border: 2px solid;
   border-radius: 2px;
   background: transparent;

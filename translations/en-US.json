@@ -9,6 +9,7 @@
   "welcome": "Welcome",
   "logout": "Logout",
   "myDoctor": "My Doctor",
+  "streamData": "Stream data",
   "startStopStreaming": "Start/Stop",
   "none": "None",
   "choosePatient": "Choose patient"
