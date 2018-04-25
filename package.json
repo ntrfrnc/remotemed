@@ -4,7 +4,8 @@
   "description": "Prototype app for testing posibility of streaming medical data over websocket connection from patient to medical doctor in realtime and storing it at the same time in the database",
   "main": "index.js",
   "scripts": {
-    "adduser": "node ./cli/addUser.js"
+    "adduser": "node ./cli/addUser.js",
+    "removeuser": "node ./cli/removeUser.js"
   },
   "author": "Rafael Pawlos",
   "license": "MIT",
