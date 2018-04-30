@@ -17,8 +17,8 @@ module.exports = v => {
     </div>
     <div class="panel__item">
        <label class="stream-data__label">${t('streamData')}</label>
-       <input type="checkbox" id="startStopStreaming" class="button">
-       <label for="startStopStreaming">${t('startStopStreaming')}</label>
+       <input type="checkbox" id="streamingToggle" class="button">
+       <label for="streamingToggle">${t('startStopStreaming')}</label>
     </div>
   </div>`;
 };

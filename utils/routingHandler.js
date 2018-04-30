@@ -4,7 +4,7 @@ const fs = require('fs');
 const util = require('util');
 const routes = require('../routes');
 
-async function routingHandler(request, response, next) {
+async function http(request, response, next) {
   const pathName = url.parse(request.url).pathname;
   let resolved = false;
 
@@ -12,7 +12,7 @@ async function routingHandler(request, response, next) {
     resolved = await handleStatic(pathName, response);
   } else {
     for (let route of routes) {
-      if (pathName === route.path) {
+      if (pathName === route.path && route.controller) {
         try {
           const controller = require('../controllers/' + route.controller);
           response.statusCode = 200;
@@ -35,7 +35,36 @@ async function routingHandler(request, response, next) {
 
   response.end();
 
-  next();
+  if (typeof next === 'function') {
+    next();
+  }
+}
+
+async function ws(wss, request, socket, head, next) {
+  const pathName = url.parse(request.url).pathname;
+  let resolved = false;
+
+  for (let route of routes) {
+    if (pathName === route.path && route.wsController) {
+      try {
+        const controller = require('../controllers/' + route.wsController);
+
+        resolved = await controller.handleUpgrade(wss, request, socket, head, route.path);
+      } catch (e) {
+        console.log(`Controller "${route.wsController}" error, message:\n`, e);
+      }
+
+      break;
+    }
+  }
+
+  if (!resolved) {
+    socket.destroy();
+  }
+
+  if (typeof next === 'function') {
+    next();
+  }
 }
 
 async function handleStatic(pathName, response) {
@@ -67,4 +96,7 @@ async function handleStatic(pathName, response) {
   }
 }
 
-module.exports = routingHandler;
+module.exports = {
+  http,
+  ws
+};

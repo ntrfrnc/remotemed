@@ -13,7 +13,8 @@
   },
   {
     "path": "/patient-panel",
-    "controller": "patientPanel"
+    "controller": "patientPanel",
+    "wsController": "wsPatientPanel"
   },
   {
     "path": "/doctor-panel",

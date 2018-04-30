@@ -16,6 +16,7 @@
     "client-sessions": "^0.8.0",
     "connect": "^3.6.6",
     "mongodb": "^3.0.5",
-    "prompt": "^1.0.0"
+    "prompt": "^1.0.0",
+    "ws": "^5.1.1"
   }
 }
