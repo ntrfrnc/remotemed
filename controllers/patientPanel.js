@@ -29,6 +29,12 @@ async function handle(request, response) {
 async function handleGet(request, response) {
   const user = await User.loggedIn(request);
 
+  const examinations = await (await db.getCollection('Examinations')).find({
+    'userID': user._id
+  }, {
+    projection: {name:1, date:1}
+  }).toArray();
+
   const doctors = await (await db.getCollection('Users')).find({
     'role': 2
   }, {
@@ -47,7 +53,8 @@ async function handleGet(request, response) {
     title: t('patientPanel'),
     pageClass: 'page--patient-panel',
     content: patientPanelTpl({
-      doctors: doctors
+      doctors: doctors,
+      examinations: examinations
     }),
     user: user,
     scripts: ['/public/js/patientPanel.js']
