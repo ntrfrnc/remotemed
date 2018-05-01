@@ -57,7 +57,8 @@ async function handleGet(request, response) {
       examinations: examinations
     }),
     user: user,
-    scripts: ['/public/js/patientPanel.js']
+    scripts: ['/public/js/patientPanel.js'],
+    css: ['/public/css/patientPanel.css']
   }));
 
   return true;

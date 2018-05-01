@@ -38,4 +38,8 @@ server.on('upgrade', async (request, socket, head) => {
 // Start listening
 server.listen(config.server.port, () => {
   console.log('App running at port:', config.server.port);
+
+  if (process.send) {
+    process.send('online');
+  }
 });

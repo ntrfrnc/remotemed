@@ -26,6 +26,7 @@ module.exports = v => {
   return html({
     title: v.title ? `RemoteMed ${v.title}` : 'RemoteMed',
     content: m,
-    scripts: v.scripts
+    scripts: v.scripts,
+    css: v.css
   });
 };

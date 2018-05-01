@@ -1,3 +1,5 @@
+import './patientPanel.scss';
+
 (function () {
   async function onDoctorChange(e) {
     const select = e.target;

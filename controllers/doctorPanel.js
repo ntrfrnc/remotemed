@@ -30,7 +30,8 @@ async function handle(request, response) {
       patients: patients
     }),
     user: user,
-    scripts: ['/public/js/doctorPanel.js']
+    scripts: ['/public/js/doctorPanel.js'],
+    css: ['/public/css/doctorPanel.css']
   }));
 
   return true;

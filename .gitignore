@@ -65,3 +65,6 @@ typings/
 
 # environment specific config
 config.json
+
+# generated assets
+public
