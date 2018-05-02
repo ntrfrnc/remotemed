@@ -24,8 +24,7 @@ module.exports = v => {
     <div class="panel__item">
       ${examinationsList(v)}
     </div>
-    <div class="panel__item">
-      <div id="examinationChartWrapper"></div>
+    <div id="examinationChartWrapper" class="panel__item examination-chart-wrapper">
     </div>
   </div>`;
 };
