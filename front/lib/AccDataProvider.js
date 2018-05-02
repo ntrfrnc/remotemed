@@ -12,7 +12,6 @@ export default class AccDataProvider {
     this.z = 0;
 
     this.updateOrientation = (e) => {
-      console.log(e);
       this.x = e.beta;
       this.y = e.gamma;
       this.z = e.alpha;
