@@ -49,7 +49,13 @@ export default class DataChart {
       tooltip: {
         trigger: 'axis',
         axisPointer: {
-          animation: false
+          animation: false,
+          label: {
+            formatter: function (params) {
+              const d = new Date(params.value);
+              return `${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}.${d.getMilliseconds()}`;
+            }
+          }
         }
       },
       grid: {
@@ -61,6 +67,9 @@ export default class DataChart {
         type: 'time',
         splitLine: {
           show: false
+        },
+        axisLine: {
+          onZero: false
         }
       },
       yAxis: {
@@ -121,5 +130,10 @@ export default class DataChart {
     Array.prototype.push.apply(this.data, part);
 
     this.setData(this.data);
+  }
+
+  clear() {
+    this.setData([[]]);
+    this.data = [];
   }
 }
