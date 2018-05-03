@@ -2,6 +2,10 @@ import './patientPanel.scss';
 import AccDataProvider from '../lib/AccDataProvider';
 import StreamingHandler from '../lib/StreamingHandler';
 import DataChart from '../lib/DataChart';
+import {postCommand} from "../lib/Tools";
+import DynamicSelectList from "../lib/DynamicSelectList/DynamicSelectList";
+
+const DataPacket = require('../../utils/DataPacket');
 
 async function onDoctorChange(e) {
   const select = e.target;
@@ -9,16 +13,12 @@ async function onDoctorChange(e) {
   const doctorID = select.options[select.selectedIndex].value;
 
   try {
-    await fetch(window.location.toString(), {
-      method: "POST",
-      headers: new Headers({
-        'Content-Type': 'application/json'
-      }),
-      credentials: "include",
-      body: JSON.stringify({
-        command: 'setDoctorForPatient',
+    await postCommand({
+      url: window.location.toString(),
+      command: 'setDoctorForPatient',
+      data: {
         doctorID: doctorID
-      })
+      }
     });
   } catch (e) {
     alert(e.message);
@@ -27,7 +27,35 @@ async function onDoctorChange(e) {
   select.disabled = false;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+async function loadExaminationList({wrapper}) {
+  try {
+    const data = await postCommand({
+      url: window.location.toString(),
+      command: 'getExaminations'
+    });
+    if (!data) {
+      return;
+    }
+
+    const list = [];
+    for (let item of data) {
+      list.push({
+        content: item.name + ' - ' + (new Date(item.date)).toLocaleString(),
+        data: item
+      });
+    }
+
+    return new DynamicSelectList({
+      wrapper: wrapper,
+      items: list
+    });
+
+  } catch (e) {
+    alert(e.message);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
   // Handle doctor change
   const doctorSelect = document.getElementById('doctorSelect');
   doctorSelect.addEventListener('change', onDoctorChange);
@@ -40,10 +68,8 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   chart.setSeries(dataProvider.series);
 
-  // Handle streaming toggle
-  const streamingToggle = document.getElementById('streamingToggle');
-  const strHandler = new StreamingHandler({
-    toggler: streamingToggle,
+  // Get streaming handler
+  const streamHandler = new StreamingHandler({
     dataProvider: dataProvider,
     samplingFrequency: 10,
     aggregationTime: 1000,
@@ -51,4 +77,67 @@ document.addEventListener('DOMContentLoaded', () => {
       chart.concatData(packet.toTimeSeries(self.startTime, self.sf));
     }
   });
+
+  // Load examination list
+  const selectList = await loadExaminationList({
+    wrapper: document.getElementById('examinationListWrapper')
+  });
+
+  selectList.onSelect = async (item) => {
+    if (streamHandler.inProgress) {
+      const r = confirm('Do you want stop currently running examination?');
+      if (!r) {
+        return;
+      } else {
+        item.element.classList.remove('stream-inprogress');
+        streamHandler.turnStreamingOff();
+        return;
+      }
+    }
+
+    chart.chart.showLoading();
+
+    const data = await postCommand({
+      url: window.location.toString(),
+      command: 'getExaminationData',
+      data: {
+        examinationID: item.data._id
+      },
+      isBinary: true
+    });
+
+    const packet = new DataPacket({
+      data: data,
+      dataType: item.data.dataType,
+      nSeries: item.data.series.length
+    });
+
+    chart.chart.hideLoading();
+
+    chart.setData(packet.toTimeSeries(new Date(item.data.date), item.data.samplingFrequency));
+  };
+
+  selectList.onAddNew = async (item) => {
+    if (streamHandler.inProgress) {
+      const r = confirm('Do you want stop currently running examination?');
+      if (!r) {
+        return;
+      } else {
+        streamHandler.turnStreamingOff();
+      }
+    }
+
+    item.classes = 'stream-inprogress';
+    item.attributes = [{name: 'data-stop-label', value: 'Stop'}];
+    chart.clear();
+
+    const {startTime, msg} = await streamHandler.turnStreamingOn({name: item.data.name});
+    item.content += ' - ' + startTime.toLocaleString();
+    item.data._id = msg.examinationID;
+    item.data.series = streamHandler.dataProvider.series;
+    item.data.dataType = streamHandler.dataProvider.dataType;
+    item.data.date = startTime.toJSON();
+    item.data.samplingFrequency = streamHandler.sf;
+  };
+
 });

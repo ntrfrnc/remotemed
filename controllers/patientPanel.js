@@ -3,7 +3,9 @@ const patientPanelTpl = require('../templates/patientPanel');
 const t = require('../utils/translate');
 const User = require('../models/User');
 const db = require('../utils/mongodb');
+const ObjectID = require('mongodb').ObjectID;
 const RelationsHandler = require('../models/RelationsHandler');
+const DataPacket = require('../utils/DataPacket');
 
 async function handle(request, response) {
   const user = await User.loggedIn(request);
@@ -29,12 +31,6 @@ async function handle(request, response) {
 async function handleGet(request, response) {
   const user = await User.loggedIn(request);
 
-  const examinations = await (await db.getCollection('Examinations')).find({
-    'userID': user._id
-  }, {
-    projection: {name:1, date:1}
-  }).toArray();
-
   const doctors = await (await db.getCollection('Users')).find({
     'role': 2
   }, {
@@ -53,8 +49,7 @@ async function handleGet(request, response) {
     title: t('patientPanel'),
     pageClass: 'page--patient-panel',
     content: patientPanelTpl({
-      doctors: doctors,
-      examinations: examinations
+      doctors: doctors
     }),
     user: user,
     scripts: ['/public/js/patientPanel.js', '/public/js/vendors~patientPanel.js'],
@@ -72,12 +67,45 @@ async function handlePost(request, response) {
       try {
         await RelationsHandler.assignPatientToDoctor(user, request.body.doctorID);
         response.write('success');
-        return true;
       } catch (e) {
         response.statusCode = 500;
         response.write(e.message);
-        return true;
       }
+      return true;
+
+    case 'getExaminations':
+      try {
+        const examinations = await (await db.getCollection('Examinations')).find({
+          userID: user._id
+        }, {
+          projection: {name: 1, date: 1, samplingFrequency: 1, dataType: 1, series: 1}
+        }).toArray();
+        response.write(JSON.stringify(examinations));
+      } catch (e) {
+        response.statusCode = 500;
+        response.write(e.message);
+      }
+      return true;
+
+    case 'getExaminationData':
+      try {
+        const examination = await (await db.getCollection('Examinations')).findOne({
+          userID: user._id,
+          _id: new ObjectID(request.body.examinationID)
+        });
+        const packet = new DataPacket({
+          data: examination.values,
+          dataType: examination.dataType,
+          nSeries: examination.series.length
+        });
+        response.writeHeader(200, {'Content-Type': 'application/octet-stream'});
+        response.write(packet.toBuffer());
+      } catch (e) {
+        response.statusCode = 500;
+        response.write(e.message);
+      }
+      return true;
+
     default:
       response.statusCode = 501;
       response.write('Command not recognized.');

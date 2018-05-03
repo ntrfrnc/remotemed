@@ -23,39 +23,43 @@ async function handleUpgrade(wss, request, socket, head) {
 
 async function handleMessage(data, ws) {
   if (data instanceof Buffer) {
-    // const packet = new DataPacket({
-    //  dataType: ws.examinationInfo.dataType,
-    //  nSeries: ws.examinationInfo.nSeries,
-    //  data: data
-    // }) );
-    // const result = await (await db.getCollection('Examinations')).updateOne(
-    //   {_id: ws.examinationInfo.id}, {
-    //     $push: {
-    //       values: {$each: packet.data}
-    //     }
-    //   });
+    const packet = new DataPacket({
+     dataType: ws.examinationInfo.dataType,
+     nSeries: ws.examinationInfo.nSeries,
+     data: data
+    });
+    const result = await (await db.getCollection('Examinations')).updateOne(
+      {_id: ws.examinationInfo.id}, {
+        $push: {
+          values: {$each: packet.data}
+        }
+      });
   }
   else if (typeof data === 'string') {
     let msg = JSON.parse(data);
 
     if (msg && msg.cmd === 'new') {
-      // const result = await (await db.getCollection('Examinations')).insertOne({
-      //   userID: ws.user._id,
-      //   date: new Date(),
-      //   type: msg.type,
-      //   dataType: msg.dataType,
-      //   samplingFrequency: msg.sf,
-      //   series: msg.series,
-      //   values: []
-      // });
+      const result = await (await db.getCollection('Examinations')).insertOne({
+        userID: ws.user._id,
+        name: msg.name,
+        date: new Date(),
+        type: msg.type,
+        dataType: msg.dataType,
+        samplingFrequency: msg.sf,
+        series: msg.series,
+        values: []
+      });
 
       ws.examinationInfo = {
-        // id: result.insertedId,
+        id: result.insertedId,
         dataType: msg.dataType,
         nSeries: msg.series.length
       };
 
-      ws.send(JSON.stringify({cmd: 'start'}));
+      ws.send(JSON.stringify({
+        cmd: 'start',
+        examinationID: result.insertedId
+      }));
     }
   }
 }

@@ -27,7 +27,6 @@ export default class AccDataProvider {
   }
 
   getData() {
-    console.log(this)
     return [this.x, this.y, this.z];
   };
 }

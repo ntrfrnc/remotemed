@@ -11,17 +11,15 @@ module.exports = class DataPacket {
 
     if (data === void(0)) {
       this.data = [];
-    } else if (data instanceof Array) {
-      this.data = data;
-    } else if (data instanceof ArrayBuffer) {
-      this.setFromArrayBuffer(data);
     } else if (data instanceof Buffer) {
       this.setFromBuffer(data);
+    } else if (data instanceof ArrayBuffer) {
+      this.setFromArrayBuffer(data);
+    } else if (data instanceof Array) {
+      this.data = data;
     } else {
       throw new Error('Given data type is not supported');
     }
-
-    this.data = data ? data : [];
 
     this.typeSize = {
       uint8: 1,
@@ -76,7 +74,15 @@ module.exports = class DataPacket {
     return buffer;
   }
 
+  toBuffer() {
+    return Buffer.from(this.toArrayBuffer());
+  }
+
   toTimeSeries(startTime, samplingFrequency) {
+    if (this.data.length < 1) {
+      return [[]];
+    }
+
     const period = 1 / samplingFrequency * 1000;
     const packetOffset = this.data.length * this.id * period;
     const startPacketTime = new Date(startTime.getTime() + packetOffset);

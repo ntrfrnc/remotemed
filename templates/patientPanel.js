@@ -1,6 +1,5 @@
 const tpl = require('../utils/tpl');
 const t = require('../utils/translate');
-const examinationsList = require('./examinationsList');
 
 module.exports = v => {
   return tpl.process`
@@ -16,15 +15,7 @@ module.exports = v => {
         </select>
       </div>
     </div>
-    <div class="panel__item stream-data">
-       <label class="stream-data__label">${t('streamData')}</label>
-       <input type="checkbox" id="streamingToggle" class="button stream-data__button">
-       <label for="streamingToggle">${t('startStopStreaming')}</label>
-    </div>
-    <div class="panel__item">
-      ${examinationsList(v)}
-    </div>
-    <div id="examinationChartWrapper" class="panel__item examination-chart-wrapper">
-    </div>
+    <div id="examinationListWrapper" class="panel__item"></div>
+    <div id="examinationChartWrapper" class="panel__item examination-chart-wrapper"></div>
   </div>`;
 };

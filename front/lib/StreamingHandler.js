@@ -2,7 +2,6 @@ const DataPacket = require('../../utils/DataPacket');
 
 export default class StreamingHandler {
   constructor({
-                toggler,
                 dataProvider,
                 samplingFrequency,
                 aggregationTime,
@@ -15,23 +14,16 @@ export default class StreamingHandler {
     this.interval = null;
     this.onStreaming = onStreaming;
     this.startTime = null;
+    this.inProgress = false;
 
     this.seriesLength = this.dataProvider.series.length;
     this.samplePeriod = 1 / this.sf * 1000;
     this.packetLength = Math.ceil(this.aggTime / this.samplePeriod);
 
-    toggler.addEventListener('change', (e) => {
-      if (e.target.checked) {
-        this.turnStreamingOn();
-      } else {
-        this.turnStreamingOff();
-      }
-    });
-
     return this;
   }
 
-  turnStreamingOn() {
+  turnStreamingOn({name}) {
     try {
       this.ws = new WebSocket(window.location.toString().replace(/^https?/, 'ws'));
     } catch (e) {
@@ -41,6 +33,7 @@ export default class StreamingHandler {
     this.ws.onopen = e => {
       this.ws.send(JSON.stringify({
         cmd: 'new',
+        name: name,
         dataType: this.dataProvider.dataType,
         sf: this.sf,
         type: this.dataProvider.name,
@@ -48,24 +41,29 @@ export default class StreamingHandler {
       }));
     };
 
-    this.ws.onmessage = e => {
-      const msg = JSON.parse(e.data);
+    return new Promise((resolve, reject) => {
+      this.ws.onmessage = e => {
+        const msg = JSON.parse(e.data);
 
-      switch (msg.cmd) {
-        case 'start':
-          this.startStreaming();
-          break;
-      }
-    };
+        switch (msg.cmd) {
+          case 'start':
+            const startTime = this.startStreaming();
+            resolve({startTime, msg});
+            break;
+        }
+      };
+    });
   }
 
   turnStreamingOff() {
+    this.inProgress = false;
     clearInterval(this.interval);
     this.dataProvider.stop();
     this.ws.close();
   }
 
   startStreaming() {
+    this.inProgress = true;
     this.dataProvider.start();
     let i = 1;
     let packetID = 0;
@@ -98,5 +96,7 @@ export default class StreamingHandler {
         });
       }
     }, this.samplePeriod);
+
+    return this.startTime;
   }
 }
