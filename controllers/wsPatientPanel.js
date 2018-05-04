@@ -10,12 +10,10 @@ async function handleUpgrade(wss, request, socket, head) {
 
   wss.handleUpgrade(request, socket, head, ws => {
     ws.user = user;
-    ws.isFirstMessage = true;
 
     ws.on('message', (message) => {
       handleMessage(message, ws);
     });
-
   });
 
   return true;
