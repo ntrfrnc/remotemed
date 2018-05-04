@@ -1,15 +1,20 @@
 import './DynamicSelectList.scss';
 
 export default class DynamicSelectList {
-  constructor({wrapper, items, onSelect, onUnselect, onAddNew}) {
+  constructor({wrapper, items, addNewForm, onSelect, onUnselect, onAddNew, clearBeforeApply}) {
+    if (clearBeforeApply) {
+      wrapper.innerHTML = '';
+    }
     this.wrapper = wrapper;
     this.wrapper.classList.add('dynamic-select-list');
 
     this.listElement = this.createListElement();
-    this.addNewForm = this.createAddNewForm();
-
     this.wrapper.appendChild(this.listElement);
-    this.wrapper.appendChild(this.addNewForm.wrapper);
+
+    if (addNewForm) {
+      this.addNewForm = this.createAddNewForm();
+      this.wrapper.appendChild(this.addNewForm.wrapper);
+    }
 
     this.onSelect = onSelect;
     this.onUnselect = onUnselect;
@@ -130,7 +135,7 @@ export default class DynamicSelectList {
 
     submitBttn.addEventListener('click', addNew);
     input.addEventListener('keyup', (e) => {
-      if(e.key === "Enter") {
+      if (e.key === "Enter") {
         addNew(e);
       }
     });

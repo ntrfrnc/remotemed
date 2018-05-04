@@ -15,9 +15,8 @@ module.exports = v => {
         </select>
       </div>
     </div>
-    <div class="panel__item">
-       <div id="chartWrapper" class="chart-wrapper"></div>
-    </div>
+    <div id="examinationListWrapper" class="panel__item examination-list-wrapper"></div>
+    <div id="examinationChartWrapper" class="panel__item examination-chart-wrapper"></div>
   </div>`;
 };
 

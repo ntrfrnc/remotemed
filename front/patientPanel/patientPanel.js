@@ -3,7 +3,7 @@ import AccDataProvider from '../lib/AccDataProvider';
 import StreamingHandler from '../lib/StreamingHandler';
 import DataChart from '../lib/DataChart';
 import {postCommand} from "../lib/Tools";
-import DynamicSelectList from "../lib/DynamicSelectList/DynamicSelectList";
+import loadExaminationList from "../lib/LoadExaminationList";
 
 const DataPacket = require('../../utils/DataPacket');
 
@@ -25,34 +25,6 @@ async function onDoctorChange(e) {
   }
 
   select.disabled = false;
-}
-
-async function loadExaminationList({wrapper}) {
-  try {
-    const data = await postCommand({
-      url: window.location.toString(),
-      command: 'getExaminations'
-    });
-    if (!data) {
-      return;
-    }
-
-    const list = [];
-    for (let item of data) {
-      list.push({
-        content: item.name + ' - ' + (new Date(item.date)).toLocaleString(),
-        data: item
-      });
-    }
-
-    return new DynamicSelectList({
-      wrapper: wrapper,
-      items: list
-    });
-
-  } catch (e) {
-    alert(e.message);
-  }
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -80,7 +52,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Load examination list
   const selectList = await loadExaminationList({
-    wrapper: document.getElementById('examinationListWrapper')
+    wrapper: document.getElementById('examinationListWrapper'),
+    addNewForm: true
   });
 
   selectList.onSelect = async (item) => {
