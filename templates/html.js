@@ -15,7 +15,7 @@ module.exports = v => {
   <body>
       ${v.content} 
       
-      ${process.environment !== 'production' && `<script src="${process.env.BROWSER_REFRESH_URL}"></script>`}
+      ${process.env.NODE_ENV === 'development' ? `<script src="${process.env.BROWSER_REFRESH_URL}"></script>` : ''}
       <script type="text/javascript" src="/public/js/manifest.js"></script>
       <script type="text/javascript" src="/public/js/base.js"></script>
       ${v.scripts && v.scripts.map(s => `<script type="text/javascript" src="${s}"></script>`).join('')}

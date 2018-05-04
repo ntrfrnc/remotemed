@@ -52,7 +52,7 @@ async function handleGet(request, response) {
       doctors: doctors
     }),
     user: user,
-    scripts: ['/public/js/patientPanel.js', '/public/js/vendors~patientPanel.js'],
+    scripts: ['/public/js/patientPanel.js'],
     css: ['/public/css/patientPanel.css']
   }));
 
@@ -93,6 +93,13 @@ async function handlePost(request, response) {
           userID: user._id,
           _id: new ObjectID(request.body.examinationID)
         });
+
+        if (examination.userID !== user._id) {
+          response.statusCode = 403;
+          response.write('Access forbidden');
+          return true;
+        }
+
         const packet = new DataPacket({
           data: examination.values,
           dataType: examination.dataType,

@@ -7,9 +7,9 @@
     "adduser": "node ./cli/addUser.js",
     "removeuser": "node ./cli/removeUser.js",
     "dev": "npm-run-all --parallel watch:server watch:build",
-    "watch:build": "webpack --watch",
-    "watch:server": "browser-refresh ./app.js",
-    "build:dev": "webpack",
+    "watch:build": "NODE_ENV=development webpack --watch",
+    "watch:server": "NODE_ENV=development browser-refresh ./app.js",
+    "build:dev": "NODE_ENV=development webpack",
     "build:prod": "NODE_ENV=production webpack -p"
   },
   "author": "Rafael Pawlos",

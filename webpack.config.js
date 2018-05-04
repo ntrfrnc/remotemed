@@ -30,9 +30,6 @@ const config = {
     ]
   },
   optimization: {
-    splitChunks: {
-      chunks: "initial",
-    },
     runtimeChunk: {
       name: "manifest",
     },
