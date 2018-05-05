@@ -1,4 +1,8 @@
-import * as echarts from 'echarts';
+import * as echarts from 'echarts/lib/echarts';
+import 'echarts/lib/chart/line';
+import 'echarts/lib/component/tooltip';
+import 'echarts/lib/component/toolbox';
+import 'echarts/lib/component/dataZoom';
 
 export default class DataChart {
   constructor({
