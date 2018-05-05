@@ -132,8 +132,8 @@ export default class DataChart {
     this.setData(this.data);
   }
 
-  clear() {
+  clear(dataVessel) {
     this.setData([[]]);
-    this.data = [];
+    this.data = dataVessel || [];
   }
 }

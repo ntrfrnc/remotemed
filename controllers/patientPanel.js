@@ -94,7 +94,7 @@ async function handlePost(request, response) {
           _id: new ObjectID(request.body.examinationID)
         });
 
-        if (examination.userID !== user._id) {
+        if (examination.userID.toString() !== user._id.toString()) {
           response.statusCode = 403;
           response.write('Access forbidden');
           return true;

@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const db = require('../utils/mongodb');
 const DataPacket = require('../utils/DataPacket');
+const WebSocket = require('ws');
 
 async function handleUpgrade(wss, request, socket, head) {
   const user = await User.loggedIn(request);
@@ -12,22 +13,36 @@ async function handleUpgrade(wss, request, socket, head) {
     ws.user = user;
 
     ws.on('message', (message) => {
-      handleMessage(message, ws);
+      handleMessage(message, ws, wss);
     });
   });
 
   return true;
 }
 
-async function handleMessage(data, ws) {
+async function handleMessage(data, ws, wss) {
   if (data instanceof Buffer) {
+    // Broadcast to doctor if connected and listen to this patient
+    for (let client of wss.clients) {
+      if (client.readyState === WebSocket.OPEN
+        && client.user._id.toString() === ws.user.doctorID.toString()
+        && client.listenPatientID
+        && client.listenPatientID.toString() === ws.user._id.toString()) {
+        client.send(data);
+        break;
+      }
+    }
+
+    // Parse binary data
     const packet = new DataPacket({
-     dataType: ws.examinationInfo.dataType,
-     nSeries: ws.examinationInfo.nSeries,
-     data: data
+      dataType: ws.examinationInfo.dataType,
+      nSeries: ws.examinationInfo.series.length,
+      data: data
     });
+
+    // Save in database
     const result = await (await db.getCollection('Examinations')).updateOne(
-      {_id: ws.examinationInfo.id}, {
+      {_id: ws.examinationInfo._id}, {
         $push: {
           values: {$each: packet.data}
         }
@@ -49,11 +64,28 @@ async function handleMessage(data, ws) {
       });
 
       ws.examinationInfo = {
-        id: result.insertedId,
+        _id: result.insertedId,
+        name: msg.name,
+        date: new Date(),
+        type: msg.type,
         dataType: msg.dataType,
-        nSeries: msg.series.length
+        samplingFrequency: msg.sf,
+        series: msg.series
       };
 
+      // Broadcast to doctor if connected and listen to this patient
+      for (let client of wss.clients) {
+        if (client.readyState === WebSocket.OPEN
+          && client.user._id.toString() === ws.user.doctorID.toString()
+          && client.listenPatientID
+          && client.listenPatientID.toString() === ws.user._id.toString()) {
+          const query = Object.assign({cmd:'newExamination'}, ws.examinationInfo);
+          client.send(JSON.stringify(query));
+          break;
+        }
+      }
+
+      // Send start command to patient
       ws.send(JSON.stringify({
         cmd: 'start',
         examinationID: result.insertedId

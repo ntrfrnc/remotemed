@@ -56,7 +56,7 @@ module.exports = class DataPacket {
   }
 
   setFromBuffer(buffer) {
-    return this.setFromArrayBuffer(new Uint8Array(buffer).buffer);
+    return this.setFromArrayBuffer((new Uint8Array(buffer)).buffer);
   }
 
   toArrayBuffer() {

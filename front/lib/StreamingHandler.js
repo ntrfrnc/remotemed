@@ -81,13 +81,16 @@ export default class StreamingHandler {
       ++i;
 
       if (i > this.packetLength) {
-        this.ws.send(packet.toArrayBuffer());
+        const p = packet;
+        setTimeout(() => { // Make this asynchronous to not slow down interval
+          this.ws.send(p.toArrayBuffer());
+
+          if (this.onStreaming) {
+            this.onStreaming(this, p);
+          }
+        }, 0);
 
         i = 1;
-
-        if (this.onStreaming) {
-          this.onStreaming(this, packet);
-        }
 
         packet = new DataPacket({
           id: ++packetID,

@@ -18,6 +18,7 @@
   },
   {
     "path": "/doctor-panel",
-    "controller": "doctorPanel"
+    "controller": "doctorPanel",
+    "wsController": "wsDoctorPanel"
   }
 ]
