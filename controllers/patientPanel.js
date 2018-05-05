@@ -66,7 +66,9 @@ async function handlePost(request, response) {
     case 'setDoctorForPatient':
       try {
         await RelationsHandler.assignPatientToDoctor(user, request.body.doctorID);
-        response.write('success');
+        response.write(JSON.stringify({
+          status: 'success'
+        }));
       } catch (e) {
         response.statusCode = 500;
         response.write(e.message);
