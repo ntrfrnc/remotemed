@@ -5,7 +5,9 @@ export default class StreamingHandler {
                 dataProvider,
                 samplingFrequency,
                 aggregationTime,
-                onStreaming
+                onStreaming,
+                onStreamingOn,
+                onStreamingOff
               }) {
     this.ws = null;
     this.dataProvider = dataProvider;
@@ -13,6 +15,8 @@ export default class StreamingHandler {
     this.aggTime = aggregationTime;
     this.interval = null;
     this.onStreaming = onStreaming;
+    this.onStreamingOn = onStreamingOn;
+    this.onStreamingOff = onStreamingOff;
     this.startTime = null;
     this.inProgress = false;
 
@@ -24,6 +28,10 @@ export default class StreamingHandler {
   }
 
   turnStreamingOn({name}) {
+    if (typeof this.onStreamingOn === 'function') {
+      this.onStreamingOn();
+    }
+
     try {
       this.ws = new WebSocket(window.location.toString().replace(/^https?/, 'ws'));
     } catch (e) {
@@ -60,6 +68,10 @@ export default class StreamingHandler {
     clearInterval(this.interval);
     this.dataProvider.stop();
     this.ws.close();
+
+    if (typeof this.onStreamingOff === 'function') {
+      this.onStreamingOff();
+    }
   }
 
   startStreaming() {

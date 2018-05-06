@@ -1,7 +1,6 @@
-import DynamicSelectList from "./DynamicSelectList/DynamicSelectList";
 import {postCommand} from "./Tools";
 
-export default async function loadExaminationList({wrapper, userID, addNewForm}) {
+export default async function loadExaminationList(userID) {
   const query = {
     url: window.location.toString(),
     command: 'getExaminations'
@@ -23,10 +22,5 @@ export default async function loadExaminationList({wrapper, userID, addNewForm})
     });
   }
 
-  return new DynamicSelectList({
-    wrapper: wrapper,
-    items: list,
-    clearBeforeApply: true,
-    addNewForm: addNewForm
-  });
+  return list;
 }

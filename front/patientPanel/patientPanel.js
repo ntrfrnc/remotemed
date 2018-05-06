@@ -3,6 +3,7 @@ import AccDataProvider from '../lib/AccDataProvider';
 import StreamingHandler from '../lib/StreamingHandler';
 import DataChart from '../lib/DataChart';
 import {postCommand} from "../lib/Tools";
+import DynamicSelectList from "../lib/DynamicSelectList/DynamicSelectList";
 import loadExaminationList from "../lib/LoadExaminationList";
 
 const DataPacket = require('../../utils/DataPacket');
@@ -47,23 +48,41 @@ document.addEventListener('DOMContentLoaded', async () => {
     aggregationTime: 1000,
     onStreaming: (self, packet) => {
       chart.concatData(packet.toTimeSeries(self.startTime, self.sf));
+    },
+    onStreamingOn: () => {
+      doctorSelect.disabled = true;
+    },
+    onStreamingOff: () => {
+      doctorSelect.disabled = false;
     }
   });
 
-  // Load examination list
-  const selectList = await loadExaminationList({
+  // Load and create examination list
+  const selectList = new DynamicSelectList({
     wrapper: document.getElementById('examinationListWrapper'),
-    addNewForm: true
+    clearBeforeCreate: true,
+    items: await loadExaminationList(),
+    addNewForm: true,
+    labels: {
+      add: 'Start',
+      name: 'Title'
+    }
   });
+
+  let itemInProgress;
 
   selectList.onSelect = async (item) => {
     if (streamHandler.inProgress) {
       const r = confirm('Do you want stop currently running examination?');
-      if (!r) {
-        return;
-      } else {
-        item.element.classList.remove('stream-inprogress');
+      if (r) {
+        itemInProgress.element.classList.remove('stream-inprogress');
         streamHandler.turnStreamingOff();
+
+        if (itemInProgress === item) {
+          return;
+        }
+      } else {
+        selectList.unselectLast();
         return;
       }
     }
@@ -90,13 +109,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     chart.setData(packet.toTimeSeries(new Date(item.data.date), item.data.samplingFrequency));
   };
 
-  selectList.onAddNew = async (item) => {
+  selectList.onBeforeAddNew = async (item) => {
     if (streamHandler.inProgress) {
       const r = confirm('Do you want stop currently running examination?');
-      if (!r) {
-        return;
-      } else {
+      if (r) {
+        itemInProgress.element.classList.remove('stream-inprogress');
         streamHandler.turnStreamingOff();
+      } else {
+        return false;
       }
     }
 
@@ -111,6 +131,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     item.data.dataType = streamHandler.dataProvider.dataType;
     item.data.date = startTime.toJSON();
     item.data.samplingFrequency = streamHandler.sf;
+
+    itemInProgress = item;
+
+    selectList.unselectLast();
   };
 
 });

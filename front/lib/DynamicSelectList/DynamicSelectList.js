@@ -1,10 +1,16 @@
 import './DynamicSelectList.scss';
 
 export default class DynamicSelectList {
-  constructor({wrapper, items, addNewForm, onSelect, onUnselect, onAddNew, clearBeforeApply}) {
-    if (clearBeforeApply) {
+  constructor({wrapper, items, addNewForm, onSelect, onUnselect, onBeforeAddNew, clearBeforeCreate, labels}) {
+    if (clearBeforeCreate) {
       wrapper.innerHTML = '';
     }
+
+    this.labels = labels || {
+      add: 'Add',
+      name: 'Name'
+    };
+
     this.wrapper = wrapper;
     this.wrapper.classList.add('dynamic-select-list');
 
@@ -18,7 +24,7 @@ export default class DynamicSelectList {
 
     this.onSelect = onSelect;
     this.onUnselect = onUnselect;
-    this.onAddNew = onAddNew;
+    this.onBeforeAddNew = onBeforeAddNew;
 
     this.list = [];
     this.lastSelected = null;
@@ -37,9 +43,7 @@ export default class DynamicSelectList {
   addItem(item) {
     item.element = this.createItemElement(item);
     item.element.addEventListener('click', (e) => {
-      if (item.selected) {
-        this.unselectItem(item.id);
-      } else {
+      if (!item.selected) {
         this.selectItem(item.id)
       }
     });
@@ -50,9 +54,7 @@ export default class DynamicSelectList {
   }
 
   selectItem(id) {
-    if (this.lastSelected) {
-      this.unselectItem(this.lastSelected.id);
-    }
+    this.unselectLast();
 
     const item = this.list[id];
     this.lastSelected = item;
@@ -74,9 +76,20 @@ export default class DynamicSelectList {
     }
   }
 
+  unselectLast() {
+    if (this.lastSelected) {
+      this.unselectItem(this.lastSelected.id);
+    }
+  }
+
   removeItem(id) {
     this.listElement.removeChild(this.list[id].element);
     this.list.splice(id, 1);
+  }
+
+  clear() {
+    this.list = [];
+    this.listElement.innerHTML = '';
   }
 
   createListElement() {
@@ -106,11 +119,11 @@ export default class DynamicSelectList {
 
     const input = document.createElement('input');
     input.className = 'add-new-form__input';
-    input.placeholder = 'Name';
+    input.placeholder = this.labels.name;
 
     const submitBttn = document.createElement('button');
     submitBttn.className = 'add-new-form__submit';
-    submitBttn.innerHTML = 'Add';
+    submitBttn.innerHTML = this.labels.add;
 
     const addNew = async (e) => {
       if (!input.value.trim()) {
@@ -124,11 +137,14 @@ export default class DynamicSelectList {
         }
       };
 
-      input.value = '';
-
-      if (typeof this.onAddNew === 'function') {
-        await this.onAddNew(item);
+      if (typeof this.onBeforeAddNew === 'function') {
+        const r = await this.onBeforeAddNew(item);
+        if (r === false) {
+          return;
+        }
       }
+
+      input.value = '';
 
       this.addItem(item);
     };
