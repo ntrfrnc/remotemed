@@ -55,6 +55,8 @@ export default class DynamicSelectList {
     this.noItemsInfoElement = null;
     this.noItemsInfo = noItemsInfo;
 
+    this.uid = 0;
+
     if (items) {
       this.addItems(items)
     }
@@ -62,6 +64,21 @@ export default class DynamicSelectList {
     if (this.list.length < 1 && this.noItemsInfo) {
       this.addNoItemsInfo();
     }
+  }
+
+  getUID() {
+    return this.uid++;
+  }
+
+  getItemByUID(uid) {
+    for (let i = 0; i < this.list.length; i++) {
+      let item = this.list[i];
+      if (item.uid === uid) {
+        return {i, item};
+      }
+    }
+
+    return {i: -1, item: null};
   }
 
   addItems(items) {
@@ -74,12 +91,13 @@ export default class DynamicSelectList {
     item.element = this.createItemElement(item);
     item.element.addEventListener('click', (e) => {
       if (!item.selected) {
-        this.selectItem(item.id)
+        this.selectItem(item)
       }
     });
 
-    item.id = this.list.length;
+    item.uid = this.getUID();
     this.list.push(item);
+
     if (top) {
       this.listElement.insertBefore(item.element, this.listElement.childNodes[0]);
     }
@@ -92,10 +110,9 @@ export default class DynamicSelectList {
     }
   }
 
-  selectItem(id) {
+  selectItem(item) {
     this.unselectLast();
 
-    const item = this.list[id];
     this.lastSelected = item;
     item.selected = true;
     item.element.classList.add('selected');
@@ -105,8 +122,7 @@ export default class DynamicSelectList {
     }
   }
 
-  unselectItem(id) {
-    const item = this.list[id];
+  unselectItem(item) {
     item.element.classList.remove('selected');
     item.selected = false;
 
@@ -117,13 +133,14 @@ export default class DynamicSelectList {
 
   unselectLast() {
     if (this.lastSelected) {
-      this.unselectItem(this.lastSelected.id);
+      this.unselectItem(this.lastSelected);
     }
   }
 
-  removeItem(id) {
-    this.listElement.removeChild(this.list[id].element);
-    this.list.splice(id, 1);
+  removeItem(it) {
+    const {i, item} = this.getItemByUID(it.uid);
+    this.listElement.removeChild(item.element);
+    this.list.splice(i, 1);
 
     if (this.list.length < 1 && this.noItemsInfo) {
       this.addNoItemsInfo();
