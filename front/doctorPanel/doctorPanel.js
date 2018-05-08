@@ -27,7 +27,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const selectList = new DynamicSelectList({
     wrapper: document.getElementById('examinationListWrapper'),
-    clearBeforeCreate: true
+    clearBeforeCreate: true,
+    noItemsInfo: true,
+    labels: {
+      noItems: 'No examinations to show'
+    }
   });
 
   const listenHandler = new ListeningHandler({
@@ -52,6 +56,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     const list = await loadExaminationList(patientID);
+    list.sort((a, b) => new Date(b.data.date) - new Date(a.data.date));
     selectList.addItems(list);
 
     selectList.onSelect = async (item) => {

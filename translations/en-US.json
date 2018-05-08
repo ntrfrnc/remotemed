@@ -10,5 +10,6 @@
   "logout": "Logout",
   "myDoctor": "My Doctor",
   "none": "None",
-  "choosePatient": "Choose patient"
+  "choosePatient": "Choose patient",
+  "examinationsList": "Examinations list"
 }

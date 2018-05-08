@@ -15,7 +15,10 @@ module.exports = v => {
         </select>
       </div>
     </div>
-    <div id="examinationListWrapper" class="panel__item examination-list-wrapper"></div>
+    <div class="panel__item examinations">
+      <h2>${t('examinationsList')}</h2>
+      <div id="examinationListWrapper" class="examination-list-wrapper"></div>
+    </div>
     <div id="examinationChartWrapper" class="panel__item examination-chart-wrapper"></div>
   </div>`;
 };

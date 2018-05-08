@@ -1,14 +1,28 @@
 import './DynamicSelectList.scss';
 
 export default class DynamicSelectList {
-  constructor({wrapper, items, addNewForm, onSelect, onUnselect, onBeforeAddNew, clearBeforeCreate, labels}) {
+  constructor({
+                wrapper,
+                items,
+                addNewForm,
+                addNewFormPosition,
+                addNewAtTop,
+                onSelect,
+                onUnselect,
+                onBeforeAddNew,
+                clearBeforeCreate,
+                labels,
+                noItemsInfo
+              }) {
+
     if (clearBeforeCreate) {
       wrapper.innerHTML = '';
     }
 
     this.labels = labels || {
       add: 'Add',
-      name: 'Name'
+      name: 'Name',
+      noItems: 'No items to show'
     };
 
     this.wrapper = wrapper;
@@ -17,9 +31,19 @@ export default class DynamicSelectList {
     this.listElement = this.createListElement();
     this.wrapper.appendChild(this.listElement);
 
+    this.addNewFormPosition = addNewFormPosition || 'bottom';
+    this.addNewAtTop = addNewAtTop;
+
     if (addNewForm) {
       this.addNewForm = this.createAddNewForm();
-      this.wrapper.appendChild(this.addNewForm.wrapper);
+      switch (this.addNewFormPosition) {
+        case 'top':
+          this.wrapper.insertBefore(this.addNewForm.wrapper, this.wrapper.childNodes[0]);
+          break;
+        case 'bottom':
+          this.wrapper.appendChild(this.addNewForm.wrapper);
+          break;
+      }
     }
 
     this.onSelect = onSelect;
@@ -28,9 +52,15 @@ export default class DynamicSelectList {
 
     this.list = [];
     this.lastSelected = null;
+    this.noItemsInfoElement = null;
+    this.noItemsInfo = noItemsInfo;
 
     if (items) {
       this.addItems(items)
+    }
+
+    if (this.list.length < 1 && this.noItemsInfo) {
+      this.addNoItemsInfo();
     }
   }
 
@@ -40,7 +70,7 @@ export default class DynamicSelectList {
     }
   }
 
-  addItem(item) {
+  addItem(item, top) {
     item.element = this.createItemElement(item);
     item.element.addEventListener('click', (e) => {
       if (!item.selected) {
@@ -50,7 +80,16 @@ export default class DynamicSelectList {
 
     item.id = this.list.length;
     this.list.push(item);
-    this.listElement.appendChild(item.element);
+    if (top) {
+      this.listElement.insertBefore(item.element, this.listElement.childNodes[0]);
+    }
+    else {
+      this.listElement.appendChild(item.element);
+    }
+
+    if (this.noItemsInfo && this.noItemsInfoElement) {
+      this.removeNoItemsInfo();
+    }
   }
 
   selectItem(id) {
@@ -85,11 +124,24 @@ export default class DynamicSelectList {
   removeItem(id) {
     this.listElement.removeChild(this.list[id].element);
     this.list.splice(id, 1);
+
+    if (this.list.length < 1 && this.noItemsInfo) {
+      this.addNoItemsInfo();
+    }
   }
 
   clear() {
+    if (this.list.length < 1) {
+      return;
+    }
+
     this.list = [];
+    this.noItemsInfoElement = null;
     this.listElement.innerHTML = '';
+
+    if (this.noItemsInfo) {
+      this.addNoItemsInfo();
+    }
   }
 
   createListElement() {
@@ -111,6 +163,25 @@ export default class DynamicSelectList {
     }
 
     return el;
+  }
+
+  addNoItemsInfo() {
+    if (this.noItemsInfoElement) {
+      return;
+    }
+
+    const el = document.createElement('span');
+    el.className = 'dynamic-select-list__no-items-info';
+    el.innerHTML = this.labels.noItems;
+    this.noItemsInfoElement = el;
+    this.listElement.appendChild(el);
+  }
+
+  removeNoItemsInfo() {
+    if (this.noItemsInfoElement) {
+      this.listElement.removeChild(this.noItemsInfoElement);
+      this.noItemsInfoElement = null;
+    }
   }
 
   createAddNewForm() {
@@ -146,7 +217,7 @@ export default class DynamicSelectList {
 
       input.value = '';
 
-      this.addItem(item);
+      this.addItem(item, this.addNewAtTop);
     };
 
     submitBttn.addEventListener('click', addNew);

@@ -58,14 +58,20 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   // Load and create examination list
+  const items = await loadExaminationList();
+  items.sort((a, b) => new Date(b.data.date) - new Date(a.data.date));
   const selectList = new DynamicSelectList({
     wrapper: document.getElementById('examinationListWrapper'),
     clearBeforeCreate: true,
-    items: await loadExaminationList(),
+    items: items,
     addNewForm: true,
+    addNewFormPosition: 'top',
+    addNewAtTop: true,
+    noItemsInfo: true,
     labels: {
-      add: 'Start',
-      name: 'Title'
+      add: 'Start new',
+      name: 'Title',
+      noItems: 'No examinations to show'
     }
   });
 
@@ -134,6 +140,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     itemInProgress = item;
 
+    selectList.listElement.scrollTop = 0;
     selectList.unselectLast();
   };
 

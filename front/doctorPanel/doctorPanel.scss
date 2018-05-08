@@ -6,7 +6,13 @@
   }
 }
 
-.examination-chart-wrapper{
+.examination-chart-wrapper {
   width: 100%;
   height: 300px;
+}
+
+.examinations > h2 {
+  margin-top: 0;
+  margin-bottom: 0.2rem;
+  padding: 0 0.5rem;
 }

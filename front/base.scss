@@ -33,6 +33,10 @@ input, select, textarea {
   font-size: 1rem;
 }
 
+label{
+  font-weight: 700;
+}
+
 ::placeholder {
   color: var(--base-focus-color);
 }
@@ -140,6 +144,7 @@ input[type="submit"] {
   transition: background-color var(--base-transition-timing);
   font-weight: 700;
   border-radius: 2px;
+  -webkit-appearance: none;
 
   &:hover {
     background: var(--base-focus-color);
@@ -209,5 +214,12 @@ input[type="checkbox"].button {
   }
   & > select:disabled {
     background-color: rgba(1, 1, 1, 0.1);
+  }
+}
+
+.examination-list-wrapper {
+  .dynamic-select-list__list {
+    max-height: 210px;
+    overflow-y: auto;
   }
 }
