@@ -59,6 +59,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     list.sort((a, b) => new Date(b.data.date) - new Date(a.data.date));
     selectList.addItems(list);
 
+    // Handle examination select
     selectList.onSelect = async (item) => {
       chart.setSeries(item.data.series);
 

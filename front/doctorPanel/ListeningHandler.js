@@ -83,7 +83,7 @@ export default class ListeningHandler {
         content: msg.name + ' - ' + (new Date(msg.date)).toLocaleString(),
         classes: 'inprogress',
         data: Object.assign({wholeInCache: true}, msg)
-      });
+      }, true);
     }
   }
 

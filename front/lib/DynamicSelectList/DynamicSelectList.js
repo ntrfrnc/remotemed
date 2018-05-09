@@ -153,6 +153,7 @@ export default class DynamicSelectList {
     }
 
     this.list = [];
+    this.lastSelected = null;
     this.noItemsInfoElement = null;
     this.listElement.innerHTML = '';
 
