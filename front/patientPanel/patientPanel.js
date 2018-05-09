@@ -1,5 +1,6 @@
 import './patientPanel.scss';
 import AccDataProvider from '../lib/AccDataProvider';
+import SinDataProvider from '../lib/SinDataProvider';
 import StreamingHandler from '../lib/StreamingHandler';
 import DataChart from '../lib/DataChart';
 import {postCommand} from "../lib/Tools";
@@ -28,33 +29,55 @@ async function onDoctorChange(e) {
   select.disabled = false;
 }
 
+function getDataProvider(name) {
+  switch(name) {
+    case 'acc':
+      return new AccDataProvider();
+    case 'sin':
+    default:
+      return new SinDataProvider();
+  }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   // Handle doctor change
   const doctorSelect = document.getElementById('doctorSelect');
   doctorSelect.addEventListener('change', onDoctorChange);
 
-  const dataProvider = new AccDataProvider();
-
   // Handle chart
   const chart = new DataChart({
     chartWrapper: document.getElementById('examinationChartWrapper')
   });
-  chart.setSeries(dataProvider.series);
 
   // Get streaming handler
   const streamHandler = new StreamingHandler({
-    dataProvider: dataProvider,
-    samplingFrequency: 10,
+    samplingFrequency: 20,
     aggregationTime: 1000,
     onStreaming: (self, packet) => {
       chart.concatData(packet.toTimeSeries(self.startTime, self.sf));
     },
-    onStreamingOn: () => {
+    onStreamingOn: (self) => {
+      chart.clear();
+      chart.setSeries(self.dataProvider.series);
       doctorSelect.disabled = true;
+      dataSourceSelect.disabled = true;
     },
     onStreamingOff: () => {
       doctorSelect.disabled = false;
+      dataSourceSelect.disabled = false;
     }
+  });
+
+  // Set default dataProvider
+  const dataSourceSelect = document.getElementById('dataSourceSelect');
+  const sourceName = dataSourceSelect.options[dataSourceSelect.selectedIndex].value;
+  streamHandler.setDataProvider(getDataProvider(sourceName));
+
+  // Handle data source change
+  dataSourceSelect.addEventListener('change', (e) => {
+    const select = e.target;
+    const sourceName = select.options[select.selectedIndex].value;
+    streamHandler.setDataProvider(getDataProvider(sourceName));
   });
 
   // Load and create examination list
@@ -112,6 +135,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     chart.chart.hideLoading();
 
+    chart.setSeries(item.data.series);
     chart.setData(packet.toTimeSeries(new Date(item.data.date), item.data.samplingFrequency));
   };
 
@@ -128,7 +152,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     item.classes = 'stream-inprogress';
     item.attributes = [{name: 'data-stop-label', value: 'Stop'}];
-    chart.clear();
 
     const {startTime, msg} = await streamHandler.turnStreamingOn({name: item.data.name});
     item.content += ' - ' + startTime.toLocaleString();

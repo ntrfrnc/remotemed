@@ -11,7 +11,9 @@ export default class DataChart {
     this.data = [];
 
     this.chart = echarts.init(chartWrapper);
-    this.chart.setOption({
+    this.lastSeries = null;
+
+    this.options = {
       toolbox: {
         right: 25,
         size: 16,
@@ -90,10 +92,31 @@ export default class DataChart {
           show: false
         }
       }
-    });
+    };
+
+    this.chart.setOption(this.options);
+  }
+
+  areArraysEqual(a, b) {
+    if (a.length !== b.length) {
+      return false;
+    }
+
+    for (let i = 0; i < a.length; i++) {
+      if (a[i] !== b[i]) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   setSeries(series) {
+    if (this.lastSeries && this.areArraysEqual(this.lastSeries, series)) {
+      return;
+    }
+
+    this.lastSeries = series;
     const seriesList = [];
 
     for (let i = 0; i < series.length; ++i) {
@@ -109,9 +132,9 @@ export default class DataChart {
       });
     }
 
-    this.chart.setOption({
+    this.chart.setOption(Object.assign({
       series: seriesList
-    });
+    }, this.options), true);
   }
 
   setData(data) {

@@ -11,5 +11,6 @@
   "myDoctor": "My Doctor",
   "none": "None",
   "choosePatient": "Choose patient",
-  "examinationsList": "Examinations list"
+  "examinationsList": "Examinations",
+  "dataSource": "Data source"
 }

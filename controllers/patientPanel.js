@@ -49,7 +49,15 @@ async function handleGet(request, response) {
     title: t('patientPanel'),
     pageClass: 'page--patient-panel',
     content: patientPanelTpl({
-      doctors: doctors
+      doctors: doctors,
+      dataSources: [{
+        name: 'acc',
+        label: 'Accelerometer'
+      }, {
+        name: 'sin',
+        label: 'Sine wave generator',
+        selected: true
+      }]
     }),
     user: user,
     scripts: ['/public/js/patientPanel.js'],

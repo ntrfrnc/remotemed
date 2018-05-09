@@ -20,16 +20,23 @@ export default class StreamingHandler {
     this.startTime = null;
     this.inProgress = false;
 
-    this.seriesLength = this.dataProvider.series.length;
+    if (this.dataProvider) {
+      this.seriesLength = this.dataProvider.series.length;
+    }
     this.samplePeriod = 1 / this.sf * 1000;
     this.packetLength = Math.ceil(this.aggTime / this.samplePeriod);
 
     return this;
   }
 
+  setDataProvider(provider) {
+    this.dataProvider = provider;
+    this.seriesLength = this.dataProvider.series.length;
+  }
+
   turnStreamingOn({name}) {
     if (typeof this.onStreamingOn === 'function') {
-      this.onStreamingOn();
+      this.onStreamingOn(this);
     }
 
     try {
@@ -70,7 +77,7 @@ export default class StreamingHandler {
     this.ws.close();
 
     if (typeof this.onStreamingOff === 'function') {
-      this.onStreamingOff();
+      this.onStreamingOff(this);
     }
   }
 
