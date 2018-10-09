@@ -10,7 +10,7 @@ using Node.js, WebSocket and MongoDB.
 
 
 
-## Implementation
+## How it works
 
 ### Data flow during examination session
 
