@@ -47,4 +47,4 @@ RemoteMed is released under the terms of the MIT license. See LICENSE file for d
 
 ## Credits
 
-RemoteMed is developed by Rafael Pawlos, http://rafaelpawlos.com
+RemoteMed is developed by Rafael Pawlos, [pawlos.dev](https://pawlos.dev)
